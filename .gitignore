@@ -1,0 +1,5 @@
+# SQLite のデータベースファイル
+database/*.sqlite
+
+# VSCode の設定フォルダ
+.vscode/
