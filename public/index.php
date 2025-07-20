@@ -27,13 +27,18 @@ $tasks = $stmt->fetchAll(PDO::FETCH_ASSOC);
 <ul>
 <?php foreach ($tasks as $t): ?>
   <li>
-    <form action="update.php" method="post" style="display:inline">
+    <form action="checkUpdate.php" method="post" style="display:inline">
       <input type="hidden" name="id" value="<?= h($t['id']) ?>">
       <input type="hidden" name="is_done" value="<?= h($t['is_done']) ?>">
       <input type="hidden" name="token" value="<?= h(csrf_token()) ?>">
       <button><?= $t['is_done'] ? '☑' : '☐' ?></button>
     </form>
     <span class="<?= $t['is_done'] ? 'done' : '' ?>"><?= h($t['title']) ?></span>
+    <form action="edit.php" method="post" style="display:inline">
+      <input type="hidden" name="id" value="<?= h($t['id']) ?>">
+      <input type="hidden" name="token" value="<?= h(csrf_token()) ?>">
+      <button>編集</button>
+    </form>
     <form action="delete.php" method="post" style="display:inline">
       <input type="hidden" name="id" value="<?= h($t['id']) ?>">
       <input type="hidden" name="token" value="<?= h(csrf_token()) ?>">

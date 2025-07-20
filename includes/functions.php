@@ -21,8 +21,6 @@ function verify_csrf(): void {
     }
 }
 
-// ——— ここからセッション／認証 ———
-
 // セッション開始（呼び出し前に必ず session_start() を）
 function init_session(): void {
     session_start([
