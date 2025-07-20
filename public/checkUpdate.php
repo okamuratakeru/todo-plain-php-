@@ -8,8 +8,6 @@ verify_csrf();
 $id = trim($_POST['id'] ?? '');
 $isDone = trim($_POST['is_done'] ?? '');
 
-error_log(print_r($_POST, true));
-
 if ($id !== '') {
     if ($isDone == 0) {
       $isDone = 1;
