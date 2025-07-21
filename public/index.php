@@ -4,11 +4,10 @@ require_once __DIR__ . '/../includes/functions.php';
 init_session();
 require_login();
 
-$uid = $_SESSION['user_id'];
-error_log(print_r($_SESSION, true));
-$email = db()->query("SELECT email FROM users WHERE id = $uid")->fetchColumn();
+$userid = $_SESSION['user_id'];
+$email = db()->query("SELECT email FROM users WHERE id = $userid")->fetchColumn();
 $stmt = db()->prepare('SELECT * FROM tasks WHERE user_id = ? ORDER BY id DESC');
-$stmt->execute([$uid]);
+$stmt->execute([$userid]);
 $tasks = $stmt->fetchAll(PDO::FETCH_ASSOC);
 ?>
 <!DOCTYPE html>
