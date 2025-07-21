@@ -5,10 +5,13 @@ init_session();
 require_login();
 verify_csrf();
 
-$id = trim($_POST['id'] ?? '');
-if ($title !== '') {
+$id = trim($_POST['id'] ?? 0);
+if ($id !== 0) {
   $pdo = db();
   $stm = $pdo->prepare('DELETE FROM tasks WHERE id = :id AND user_id = :user_id');
-  $stm->execute([':id' => $id, 'user_id' => $_SESSION['user_id']]);
+  $stm->execute([
+    ':id' => $id, 
+    ':user_id' => $_SESSION['user_id'],
+  ]);
 }
 header('Location: index.php');

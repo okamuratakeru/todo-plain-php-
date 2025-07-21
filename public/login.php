@@ -6,7 +6,6 @@ init_session();
 $errors = [];
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     verify_csrf();
-    // error_log(print_r($_POST['email'], true));
     if (login($_POST['email'] ?? '', $_POST['password'] ?? '')) {
         header('Location: index.php');
         exit;

@@ -5,11 +5,14 @@ init_session();
 require_login();
 verify_csrf();
 
-$id = trim($_POST['id'] ?? '');
-if ($id !== '') {
+$id = trim($_POST['id'] ?? 0);
+if ($id !== 0) {
   $pdo = db();
   $stm = $pdo->prepare('SELECT * FROM tasks WHERE id = :id AND user_id = :user_id');
-  $stm->execute([':id' => $id, 'user_id' => $_SESSION['user_id']]);
+  $stm->execute([
+    ':id' => $id, 
+    ':user_id' => $_SESSION['user_id'],
+  ]);
   $task = $stm->fetch(PDO::FETCH_ASSOC);
 }
 ?>
