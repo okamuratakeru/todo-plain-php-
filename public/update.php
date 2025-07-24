@@ -7,6 +7,9 @@ verify_csrf();
 
 $id = trim($_POST['id'] ?? 0);
 $title = trim($_POST['title'] ?? '');
+error_log('POSTの値: ' . print_r($_POST, true));
+error_log('idの値: ' . print_r($id, true));
+error_log('titleの値: ' . print_r($title, true));
 if ($id !== 0 && $title !== '') {
   $pdo = db();
   $stm = $pdo->prepare('UPDATE tasks SET title = :title WHERE id = :id AND user_id = :user_id');
