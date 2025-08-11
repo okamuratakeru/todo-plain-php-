@@ -98,18 +98,20 @@ document.querySelectorAll('.tag-name').forEach(span => {
     const finish = async (commit) => {
       if (done) return; done = true;
       const newName = commit ? input.value.trim() : null; // Esc時はnullで不更新
-      const nameToShow = newName ?? span.textContent;
-      span.textContent = nameToShow;
+      // // 1) キャンセル（Esc）→ 何もせず戻す
+      // if (newName === null) { input.replaceWith(span); return; }
+
+      // // 2) 空文字は不許可 → 戻す
+      // if (newName === '')   { input.replaceWith(span); return; }
+
+      // // 3) 変更なし → 戻す
+      // if (newName === prevName) { input.replaceWith(span); return; }
+      span.textContent = newName;
       input.replaceWith(span);
 
-      if (newName && newName !== span.textContent) {
-        // ここだと span.textContent が上で差し替わってるので比較用に保持した方が良いが、
-        // とにかく保存だけすればOK
-      }
-      if (newName) {
-        try { await saveTag(id, {name: newName}); }
-        catch { location.reload(); }
-      }
+      try { await saveTag(id, {name: newName}); }
+      catch { location.reload(); }
+      
     };
 
     input.addEventListener('keydown', e => {
