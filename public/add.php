@@ -6,8 +6,9 @@ require_login();
 verify_csrf();
 
 $title = trim($_POST['title'] ?? '');
-$tags = trim($_POST['tags'] ?? '');
-$tagNames = array_filter(array_map('trim', explode(',', $tags)));
+$tagIds  = array_map('intval', $_POST['tag_ids'] ?? []);
+
+error_log(print_r($tagIds, true));
 
 if ($title === '') { header('Location: index.php'); exit; }
 
@@ -23,7 +24,7 @@ function uniqueRandomColor(PDO $pdo, int $retryMax = 20): string
     static $cache = null;
     if ($cache === null) {
         $cache = $pdo->query('SELECT color_hex FROM tags')
-                     ->fetchAll(PDO::FETCH_COLUMN);
+                    ->fetchAll(PDO::FETCH_COLUMN);
     }
 
     for ($i = 0; $i < $retryMax; $i++) {
@@ -51,26 +52,18 @@ try {
     $taskId = $pdo->lastInsertId();
 
     /* ② タグごとに INSERT OR IGNORE */
-    $insTag = $pdo->prepare('INSERT OR IGNORE INTO tags(name, color_hex) VALUES(?, ?)');
-    $selTag = $pdo->prepare('SELECT id FROM tags WHERE name = ?');
-    $map    = $pdo->prepare('INSERT INTO tasks_tags(task_id,tag_id) VALUES(?,?)');
+    $map = $pdo->prepare(
+        'INSERT OR IGNORE INTO tasks_tags(task_id, tag_id) VALUES (?, ?)'
+    );
 
-    foreach ($tagNames as $name) {
-        if ($name === '') continue;
-        // $insTag->execute([$name]);          // 新規なら挿入
-        $selTag->execute([$name]);
-        $tagId = $selTag->fetchColumn();
-
-        if (!$tagId) { // 新規タグだけ色を決める
-            $color  = uniqueRandomColor($pdo);
-            $insTag->execute([$name, $color]);
-            $selTag->execute([$name]);      // id を再取得
-            $tagId = $selTag->fetchColumn();
+    foreach (array_unique($tagIds) as $tgId) {
+        if ($tgId > 0) {            // 念のため 0 やマイナスを除外
+            $map->execute([$taskId, $tgId]);
         }
-        
-        $map->execute([$taskId, $tagId]);   // 中間テーブルへ
     }
+
     $pdo->commit();
+
 } catch (Throwable $e) {
     $pdo->rollBack(); throw $e;
 }

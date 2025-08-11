@@ -4,6 +4,9 @@ require_once __DIR__ . '/../includes/functions.php';
 init_session();
 require_login();
 
+$allTags = db()->query('SELECT id, name, color_hex FROM tags ORDER BY name')
+        ->fetchAll(PDO::FETCH_ASSOC);
+
 $userid = $_SESSION['user_id'];
 $email = db()->query("SELECT email FROM users WHERE id = $userid")->fetchColumn();
 
@@ -39,6 +42,7 @@ function tags_of(int $taskId): array {
   return $stmt->fetchAll(PDO::FETCH_ASSOC);
 }
 ?>
+
 <!DOCTYPE html>
 <html lang="ja"><head><meta charset="UTF-8"><title>Todo</title>
 <link rel="stylesheet" href="style.css">
@@ -49,7 +53,17 @@ function tags_of(int $taskId): array {
 
 <form action="add.php" method="post">
   <input name="title" placeholder="やることを書く" required>
-  <input name="tags"  placeholder="タグ(カンマ区切り)" style="width:14rem">
+  <!-- タグ選択エリア -->
+  <div>
+    <?php foreach ($allTags as $tg): ?>
+      <label style="margin-right:.5em">
+        <input type="checkbox" name="tag_ids[]" value="<?= $tg['id'] ?>">
+        <span class="badge" style="background:<?= h($tg['color_hex']) ?>">
+          <?= h($tg['name']) ?>
+        </span>
+      </label>
+    <?php endforeach ?>
+  </div>
   <input type="hidden" name="token" value="<?= h(csrf_token()) ?>">
   <button>追加</button>
 </form>
